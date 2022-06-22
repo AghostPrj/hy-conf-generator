@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	confKeys = [15][]string{
+	confKeys = [24][]string{
 		{object.HyListenKey, object.HyListenKey},
 		{object.HyProtocolKey, object.HyProtocolKey},
 		{object.HyCertKey, object.HyCertKey},
@@ -31,6 +31,15 @@ var (
 		{object.HyResolvePreferenceKey, object.HyResolvePreferenceKey},
 		{object.HyAuthModeKey, object.HyAuthModeKey},
 		{object.HyAuthConfStringKey, object.HyAuthConfStringKey},
+		{object.HyServerKey, object.HyServerKey},
+		{object.HyAuthStrKey, object.HyAuthStrKey},
+		{object.HyServerNameKey, object.HyServerNameKey},
+		{object.HyRcvWindowKey, object.HyRcvWindowKey},
+		{object.HySocks5PortKey, object.HySocks5PortKey},
+		{object.HyHttpPortKey, object.HyHttpPortKey},
+		{object.HyProxyUsernameKey, object.HyProxyUsernameKey},
+		{object.HyProxyPasswordKey, object.HyProxyPasswordKey},
+		{object.HyProxyTimeoutKey, object.HyProxyTimeoutKey},
 	}
 )
 
@@ -56,7 +65,6 @@ func main() {
 	viper.AutomaticEnv()
 
 	conf := object.HyConf{
-		Listen:            viper.GetString(object.HyListenKey),
 		Protocol:          viper.GetString(object.HyProtocolKey),
 		Cert:              viper.GetString(object.HyCertKey),
 		Key:               viper.GetString(object.HyKeyKey),
@@ -65,11 +73,54 @@ func main() {
 		Obfs:              viper.GetString(object.HyObfsKey),
 		Alpn:              viper.GetString(object.HyAlpnKey),
 		RcvWindowConn:     viper.GetInt64(object.HyRcvWindowConnKey),
-		RcvWindowClient:   viper.GetInt64(object.HyRcvWindowClientKey),
 		MaxConnClient:     viper.GetInt32(object.HyMaxConnClientKey),
 		Resolver:          viper.GetString(object.HyResolverKey),
 		ResolvePreference: viper.GetString(object.HyResolvePreferenceKey),
-		Auth:              nil,
+
+		Server:     viper.GetString(object.HyServerKey),
+		AuthStr:    viper.GetString(object.HyAuthStrKey),
+		ServerName: viper.GetString(object.HyServerNameKey),
+
+		Auth:   nil,
+		Socks5: nil,
+		Http:   nil,
+	}
+
+	if viper.GetString(object.HyListenKey) != "---" {
+		conf.Listen = viper.GetString(object.HyListenKey)
+	}
+
+	if viper.GetInt64(object.HyRcvWindowClientKey) != 0 {
+		conf.RcvWindowClient = viper.GetInt64(object.HyRcvWindowClientKey)
+	}
+
+	if viper.GetInt64(object.HyRcvWindowClientKey) != 0 {
+		conf.RcvWindowClient = viper.GetInt64(object.HyRcvWindowClientKey)
+	}
+
+	if viper.GetInt64(object.HyMaxConnClientKey) != 0 {
+		conf.MaxConnClient = viper.GetInt32(object.HyMaxConnClientKey)
+	}
+
+	if viper.GetInt32(object.HySocks5PortKey) > 0 && viper.GetInt32(object.HySocks5PortKey) < 65536 {
+		socks5Conf := object.Socks5Conf{
+			Listen:   "0.0.0.0:" + viper.GetString(object.HySocks5PortKey),
+			Timeout:  viper.GetInt32(object.HyProxyTimeoutKey),
+			User:     viper.GetString(object.HyProxyUsernameKey),
+			Password: viper.GetString(object.HyProxyPasswordKey),
+		}
+		conf.Socks5 = &socks5Conf
+	}
+
+	if viper.GetInt32(object.HyHttpPortKey) > 0 && viper.GetInt32(object.HyHttpPortKey) < 65536 &&
+		viper.GetInt32(object.HyHttpPortKey) != viper.GetInt32(object.HySocks5PortKey) {
+		httpConf := object.HttpConf{
+			Listen:   "0.0.0.0:" + viper.GetString(object.HyHttpPortKey),
+			Timeout:  viper.GetInt32(object.HyProxyTimeoutKey),
+			User:     viper.GetString(object.HyProxyUsernameKey),
+			Password: viper.GetString(object.HyProxyPasswordKey),
+		}
+		conf.Http = &httpConf
 	}
 
 	if len(viper.GetString(object.HyAuthModeKey)) > 0 {

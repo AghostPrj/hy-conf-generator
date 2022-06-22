@@ -42,10 +42,20 @@ const (
 
 	HyAuthModeKey       = "HY_AUTH_MODE"
 	HyAuthConfStringKey = "HY_AUTH_CONFIG"
+
+	HyServerKey        = "HY_SERVER"
+	HyAuthStrKey       = "HY_AUTH_STR"
+	HyServerNameKey    = "HY_SERVER_NAME"
+	HyRcvWindowKey     = "HY_RCV_WINDOW"
+	HySocks5PortKey    = "HY_SOCKS5_PORT"
+	HyHttpPortKey      = "HY_HTTP_PORT"
+	HyProxyUsernameKey = "HY_PROXY_USERNAME"
+	HyProxyPasswordKey = "HY_PROXY_PASSWORD"
+	HyProxyTimeoutKey  = "HY_PROXY_TIMEOUT"
 )
 
 type HyConf struct {
-	Listen            string      `json:"listen"`
+	Listen            string      `json:"listen,omitempty"`
 	Protocol          string      `json:"protocol,omitempty"`
 	Cert              string      `json:"cert,omitempty"`
 	Key               string      `json:"key,omitempty"`
@@ -59,6 +69,27 @@ type HyConf struct {
 	Resolver          string      `json:"resolver,omitempty"`
 	ResolvePreference string      `json:"resolve_preference,omitempty"`
 	Auth              *HyAuthConf `json:"auth,omitempty"`
+
+	Server     string      `json:"server,omitempty"`
+	AuthStr    string      `json:"auth_str,omitempty"`
+	ServerName string      `json:"server_name,omitempty"`
+	RcvWindow  int64       `json:"recv_window,omitempty"`
+	Socks5     *Socks5Conf `json:"socks5,omitempty"`
+	Http       *HttpConf   `json:"http,omitempty"`
+}
+
+type Socks5Conf struct {
+	Listen   string `json:"listen,omitempty"`
+	Timeout  int32  `json:"timeout,omitempty"`
+	User     string `json:"user,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+type HttpConf struct {
+	Listen   string `json:"listen,omitempty"`
+	Timeout  int32  `json:"timeout,omitempty"`
+	User     string `json:"user,omitempty"`
+	Password string `json:"password,omitempty"`
 }
 
 type HyAuthConf struct {
