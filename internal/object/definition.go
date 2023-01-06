@@ -35,7 +35,7 @@ const (
 	HyMaxConnClientDefault = int32(4096)
 
 	HyResolverKey     = "HY_RESOLVER"
-	HyResolverDefault = "8.8.8.8:53"
+	HyResolverDefault = "udp://8.8.8.8:53"
 
 	HyResolvePreferenceKey     = "HY_RESOLVE_PREFERENCE"
 	HyResolvePreferenceDefault = "4"
